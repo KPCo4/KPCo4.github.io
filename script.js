@@ -1,3 +1,26 @@
+//Dark Mode Toggle
+const darkModeToggle = document.getElementById('darkModeToggle');
+const body = document.body;
+
+// Check for saved preference
+if (localStorage.getItem('darkMode') == 'enabled') {
+    body.classList.add('dark-mode');
+    darkModeToggle.textContent = '☀️';
+}
+
+darkModeToggle.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+
+    // Update icon
+    if (body.classList.contains('dark-mode')) {
+        darkModeToggle.textContent = '☀️';
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        darkModeToggle.textContent = '🌙';
+        localStorage.setItem('darkMode', null);
+    }
+});
+
 // Smooth scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {

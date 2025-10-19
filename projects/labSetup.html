@@ -20,7 +20,7 @@
                 <p><strong>Date:</strong> 14-08-2025</p>
                 <p><strong>Contributors:</strong> Kye P.C.</p>
                 <p><strong>Lab Purpose:</strong> Safe environment for malware detonation and behavioural analysis.</p>
-                <p><strong>Virtualization:</strong> VirtualBox x.x running on Ubuntu 22.0x host with a Windows 10 (x64) guest VM</p>
+                <p><strong>Virtualization:</strong> VirtualBox 7.1 running on Ubuntu 22.04 (host)</p>
             </div>
             </section>
 
@@ -31,11 +31,29 @@
                 <p>This section outlines the steps I've taken to configure the lab environment and ensure isolation from external networks.</p>
 
                 <ol>
-                    <li><strong>Host Preparation:</strong></li>
-                    <li><strong>Virtualization Platform:</strong></li>
-                    <li><strong>Guest Creation:</strong></li>
-                    <li><strong>Analysis Tools Installation:</strong></li>
-                    <li><strong>Snapshot Baseline:</strong></li>
+                    <li><strong>Host Preparation:</strong> Installed Ubuntu 22.04 LTS with all security updates applied.</li>
+                    <li><strong>Virtualization Platform & Topology:</strong> Configured VirtualBox on the Ubuntu host to run two isolated VMs:
+                        <ul>
+                            <li><strong>Windows 10 (analysis VM)</strong> - primary analysis target (8 GB RAM, 4 cores)</li>
+                            <li><strong>Ubuntu (INetSim server)</strong> - provides simulated internet services (DNS, HTTP, SMTP) for the analysis VM.</li>
+                        </ul> 
+                        Both VMs are connected via a VirtualBox **host-only** network so the analysis VM uses INetSim for DNS and service responses while remaining isolated from the real LAN and internet. 
+                    </li>
+                    <li><strong>Guest Creation:</strong> Deployed a Windows 10 (x64) VM with 8 GB RAM, 4 cores, and no shared clipboard or drag-and-drop.</li>
+                    <li><strong>Analysis Tools Installation:</strong>
+                    <ul>
+                        <li>CFF Explorer</li>
+                        <li>CyberChef v10</li>
+                        <li>Ghidra</li>
+                        <li>IDA Free</li>
+                        <li>Regshot</li>
+                        <li>Resource Hacker</li>
+                        <li>Sysinternals Suite</li>
+                        <li>Wireshark 4.4</li>
+                        <li>x64dbg</li>
+                    </ul>
+                    </li>
+                    <li><strong>Snapshot Baseline:</strong> Created a clean “Tools Installed" snapshot before loading any samples.</li>
                 </ol>
             </section>
 
@@ -45,10 +63,10 @@
                 <p>After initial setup, validation was performed to confirm the lab's isolation, functionality, and stability.</p>
 
                 <ul>
-                    <li><strong>Network Isolation:</strong> Lorem Ipsum.</li>
-                    <li><strong>Tool Functionality:</strong> Lorem Ipsum.</li>
-                    <li><strong>Snapshot Rollback:</strong> Lorem Ipsum.</li>
-                    <li><strong>Performance:</strong> Lorem Ipsum.</li>
+                    <li><strong>Network Isolation:</strong> Verified guest VM network isolation using host-only adapter. Internet access blocked; internal communication confirmed.</li>
+                    <li><strong>Tool Functionality:</strong> All analysis tools launched successfully and captured expected data. No cross-tool interference observed.</li>
+                    <li><strong>Snapshot Rollback:</strong> Snapshot rollback verified. Environment returns to known-clean state.</li>
+                    <li><strong>Performance:</strong> Performance stable at 4 vCPUs, 8GB RAM.</li>
                 </ul>
 
                 <p class="muted">No anomalies observed during validation. Environment is considered safe for dynamic malware analysis.</p>

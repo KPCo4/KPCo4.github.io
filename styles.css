@@ -187,6 +187,10 @@ section {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
 }
 
 .section-title {

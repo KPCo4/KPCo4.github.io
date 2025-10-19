@@ -339,3 +339,11 @@ body.dark-mode .project-link:hover .project-card {
         padding: 3rem 5%;
     }
 }
+
+main section {
+    min-height: auto;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    display: block;
+    justify-content: unset;
+}

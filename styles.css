@@ -117,6 +117,7 @@ nav a:hover::after {
     color: white;
     text-align: center;
     position: relative;
+    overflow: hidden;
 }
 
 .hero::before {

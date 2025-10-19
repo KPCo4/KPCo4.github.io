@@ -93,7 +93,7 @@ nav a:hover::after {
 
 .dark-mode-toggle {
     position: absolute;
-    right: 2%;
+    right: 5%;
     background: none;
     border: 2px solid var(--text-dark);
     border-radius: 20%;
@@ -116,7 +116,7 @@ nav a:hover::after {
     background: var(--gradient);
     color: white;
     text-align: center;
-    position: hidden;
+    position: relative;
 }
 
 .hero::before {
@@ -190,7 +190,7 @@ section {
     
     width: 100%;
     max-width: 100vw;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .section-title {
@@ -315,10 +315,6 @@ body.dark-mode .project-link:hover .project-card {
 
 /* Responsive */
 @media (max-width: 760px) {
-    html {
-        overflow-x: hidden;
-    }
-
     .hero h1 {
         font-size: 2.5rem;
     }
@@ -337,45 +333,5 @@ body.dark-mode .project-link:hover .project-card {
 
     section {
         padding: 3rem 5%;
-    }
-}
-
-/* -- Fix horizontal overflow and section sizing on mobile -- */
-html, body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden; /* Prevent sideways scroll */
-}
-
-/* Keep project pages narrower and avoid % padding overflow */
-main {
-    max-width: 100%;
-    width: 100%;
-    margin: 100px auto 40px;
-    padding: 0 1rem; /* tighter padding for small screens */
-}
-
-/* Compact section styling for smaller devices */
-main section {
-    min-height: auto;
-    padding: 1.25rem 1.25rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Ensure nav and hero don't stretch the layout */
-nav, .hero {
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
-/* Responsive tweaks */
-@media (max-width: 760px) {
-    section {
-        padding: 1.25rem;
-    }
-
-    main {
-        padding: 0 0.8rem;
     }
 }

@@ -257,9 +257,9 @@ body.dark-mode .project-card {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
 }
 
-body.dark-mode .project-link:hover .project-card {
+/* body.dark-mode .project-link:hover .project-card {
     
-}
+} */
 
 .project-card:hover {
     transform: translateY(-10px);

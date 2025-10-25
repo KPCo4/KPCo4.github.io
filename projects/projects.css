@@ -75,6 +75,26 @@ body.dark-mode .stat-box {
 
 .back-btn:hover { transform: translateY(-2px); }
 
+.long-paragraph-list {
+    list-style-position: outside;
+    padding-left: 1.25rem;
+    margin-top: 1rem;
+}
+
+.methodology-note {
+    margin-bottom: 0.5rem;
+}
+
+.long-paragraph-list > li {
+    margin: 0 0 1.1rem 0;
+    text-align: justify;
+    hyphens: auto;
+}
+
+@media (max-width: 420px) {
+    .long-paragraph-list > li { margin-bottom: 0.8rem; line-height: 1.55; }
+}
+
 /* Compact section styling for project/lab pages */
 main section {
     min-height: auto;

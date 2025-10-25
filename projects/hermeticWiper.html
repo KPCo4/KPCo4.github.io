@@ -13,8 +13,8 @@
         <main>
             <!-- Project Header -->
             <section id="project-header">
-            <h1>Lab Setup</h1>
-            <p>A one-line description of the malware sample and analysis objective.</p>
+            <h1>HermeticWiper</h1>
+            <p>Analysis of HermeticWiper. driver abuse, physical-drive enumeration and cryptographic overwrites.</p>
             <div class="stat-box">
                 <p><strong>Date:</strong> 16-05-2025</p>
                 <p><strong>Contributors:</strong> Kye P.C.</p>
@@ -24,7 +24,7 @@
 
             <!-- Quick Overview -->
             <section id="quick-overview">
-            <h2>Quick Oveview</h2>
+            <h2>Quick Overview</h2>
             <div class="stat-box">
                 <p><strong>Sample Hash (SHA256)</strong> 1bc44eef75779e3ca1eefb8ff5a64807dbc942b1e4a2672d77b9f6928d292591</p>
                 <p><strong>Malware Family:</strong> HermeticWiper (standalone family)</p>
@@ -36,10 +36,18 @@
             <section id="executive-summary">
             <h2>Executive Summary</h2>
             <p>Summarize the malware — what it is, and the main findings.</p>
-            <ul>
-                <li>Example</li>
-                <li>Examp</li>
-                <li>Ex</li>
+            <ul class="long-paragraph-list">
+                <li>HermeticWiper is a destructive data-wiping malware that systematically renders infected Windows systems inoperable. 
+                    This malware leverages a legitimate EaseUS Partition Master driver (EPMNTDRV) to gain low-level access to physical storage devices.
+                    Once deployed, it disables system recovery mechanisms by stopping Volume Shadow Copy services and Windows crash reporting,
+                    preventing restoration and hindering forensic analysis.
+                </li>
+
+                <li>The malware enumerates physical drives and partitions, targeting both fixed and removable media, and overwrites critical data using cryptographically random bytes or failing that zeros.
+                    It specifically targets system critical directories including Windows, Program Files, and user data folders while identifying and avoiding domain controllers. 
+                    Before forcing a system shutdown HermeticWiper hides its traces by deleting registry entries, removing deployed driver files, and disabling file explorer indicators that could reveal its operation.
+                </li>
+                <li>The sample analysed demonstrates anti-forensic capabilities and deliberate data destruction designed to maximise damage while minimising detection opportunities.</li>
             </ul>
             </section>
 
@@ -48,64 +56,208 @@
                 <h2>Analysis Process</h2>
 
                 <h3>Static Analysis</h3>
+                <h4>File Properties</h4>
                 <ul>
-                    <li>File Properties — PE32 executable, compiled on 2025-10-01.</li>
-                    <li>Strings Analysis — presence of URLs, API calls, encoded configs.</li>
-                    <li>PE Structure — unusual import table, custom section naming.</li>
+                    <li>PE32 executable (Windows Vista compatible)</li>
+                    <li>.exe extension removed from sample</li>
+                    <li>Embeds compressed EPMNTDRV driver (EaseUS Partition Master driver)</li>
+                    <li>Multiple driver versions embedded for different Windows versions (XP x64, Vista+)</li>
+                </ul>
+                <h4>Strings Analysis</h4>
+                <ul>
+                    <li>File system paths: "C:\Windows\SYSVOL", "%systemDir%\Drivers"</li>
+                    <li>Target directories: "Windows", "Program Files", "Program Files (x86)", 
+                        "PerfLogs", "boot", "System Volume Information", "AppData", 
+                        "Documents and Settings", "ntuser", "My Documents", "Desktop"</li>
+                    <li>Driver reference: "\EPMNTDRV%u"</li>
+                    <li>Physical drive enumeration: "\PhysicalDrive%u"</li>
+                </ul>
+                <h4>PE Structure</h4>
+                <ul>
+                    <li>File enumeration: FindFirstFile, FindNextFile</li>
+                    <li>Cryptographic functions: CryptAcquireContextW, CryptReleaseContext</li>
+                    <li>Memory management: GetProcessHeap, HeapAlloc</li>
+                    <li>Privilege escalation: AdjustTokenPrivileges</li>
+                    <li>Service control: OpenSCManagerW, CreateServiceW, OpenServiceW,
+                        ControlService
+                    </li>
+                    <li>Device I/O: DeviceIOControl (multiple IOCTL codes)</li>
+                    <li>File operations: CreateFileW, PathFileExistsW, LZOpenFileW, LZCopy</li>
                 </ul>
 
                 <h3>Dynamic Analysis</h3>
+                <p class="methodology-note">
+                    <em>Note: the following behaviours were inferred through static disassembly 
+                        and reverse engineering using IDA. Dynamic execution was not performed 
+                        due to the destructive nature of this wiper malware.</em>
+                </p>
+                <h4>Behavioural Observations</h4>
                 <ul>
-                    <li>Behavioral Observations — creates child processes, network traffic to external IPs.</li>
-                    <li>Network Activity — beaconing every 60s to `/update` endpoint.</li>
-                    <li>Registry Changes — adds startup key for persistence.</li>
-                    <li>File System Modifications — drops temp files in AppData.</li>
+                    <li>Elevates privileges using AdjustTokenPrivileges (SeLoadDriverPrivilege)</li>
+                    <li>Decompresses and deploys EPMNTDRV driver to %systemDir%/Drivers with randomly generated names consisting of two Latin characters</li>
+                    <li>Creates and starts malicious driver service via Service Control Manager</li>
+                    <li>Creates multiple threads for parallel execution:
+                        <ul>
+                        <li>Thread 1 (sub_403b40): Handles delayed system shutdown</li>
+                        <li>Thread 2 (sub_4034b0): Modifies registry and enumerates drives</li>
+                        <li>Thread 3 (sub_403310): Volume bitmap analysis and file targeting</li>
+                        </ul>
+                    </li>
                 </ul>
-
-                <h3>Screenshots / Evidence</h3>
-                <p>Add Wireshark captures, process monitor logs, or memory dump screenshots below</p>
-                <p><em>(placeholder for images / embedded content)</em></p>
+                <h4>Network Activity</h4>
+                <ul>
+                    <li>No network activity observed (wiper malware operates locally)</li>
+                </ul>
+                <h4>Registry Changes</h4>
+                <ul>
+                    <li>Disables crash dump reporting: Sets CrashControl\CrashDumpEnabled to 0</li>
+                    <li>Disables File Explorer indicators:
+                        <ul>
+                            <li>ShowCompColor = 0 (hides encrypted file colours)</li>
+                            <li>ShowInfoTip = 0 (disables tooltip pop-ups)</li>
+                        </ul>
+                    </li>
+                    <li>Deletes own registry entries under HKEY_LOCAL_MACHINE for anti-forensics</li>
+                    <li>Enumerates HKEY_USERS subkeys for user-specific modifications</li>
+                </ul>
+                <h4>File System Modifications</h4>
+                <ul>
+                    <li>Stops Volume Shadow Copy (VSS) service to prevent system restore</li>
+                    <li>Enumerates first 100 physical drives (\PhysicalDrive0 through \PhysicalDrive99)</li>
+                    <li>Distinguishes between removable media (type 11) and fixed media (type 12)</li>
+                    <li>Overwrites data using:
+                        <ol>
+                            <li>Primary method: Cryptographically random bytes (CryptAcquireContextW)</li>
+                            <li>Fallback method: Zero-byte overwriting</li>
+                        </ol>
+                    </li>
+                    <li>Targets critical system directories and user data folders</li>
+                    <li>Checks for domain controller presence (C:\Windows\SYSVOL) and avoids if detected</li>
+                    <li>Deletes deployed driver files after service creation for trace removal</li>
+                </ul>
             </section>
 
             <!-- Key Findings -->
             <section id="key-findings">
                 <h2>Key Findings</h2>
+
+                <h3>Indicators of Compromise (IOCs)</h3>
                 <ul>
-                    <li><strong>IOCs:</strong> SHA256 hashes, domains, IPs, file paths.</li>
-                    <li><strong>Attack Vectors:</strong> Phishing attachments using .docm macros.</li>
-                    <li><strong>Persistence Mechanisms:</strong> Registry Run key and service creation.</li>
-                    <li><strong>C2 Communication:</strong> HTTP POSTs with base64 encoded payloads.</li>
+                    <li><strong>Driver Component:</strong> EPMNTDRV (EaseUS Partition Master driver - legitimate but abused)</li>
+                    <li><strong>File Paths:</strong>
+                        <ul>
+                            <li>%SystemRoot%\Drivers\[two random Latin characters].sys</li>
+                            <li>C:\Windows\SYSVOL (checked for domain controller detection)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Service Name:</strong> Randomly generated driver service based on generated driver name.</li>
+                    <li><strong>Physical Drive Targets:</strong> \\PhysicalDrive0 through \\PhysicalDrive99</li>
+                </ul>
+
+                <h3>Attack Vectors</h3>
+                <ul>
+                    <li><strong>Deployment Method:</strong> Requires initial system access</li>
+                    <li><strong>Privilege Escalation:</strong> Uses AdjustTokenPrivileges to obtain SeLoadDriverPrivilege</li>
+                    <li><strong>Driver Abuse:</strong> Deploys legitimate signed driver for low-level disk access</li>
+                </ul>
+
+                <h3>Persistence & Execution Mechanisms</h3>
+                <ul>
+                    <li><strong>Service Creation:</strong> Creates and starts malicious driver service via Service Control Manager (OpenSCManagerW, CreateServiceW)</li>
+                    <li><strong>Multi-threaded Execution:</strong> Spawns multiple threads for parallel drive enumeration and file targeting</li>
+                    <li><strong>No Traditional Persistence:</strong> Wiper malware designed for one-time destruction, not persistent access</li>
+                    <li><strong>Forced Shutdown:</strong> Initiates system reboot after configurable delay to ensure damage completion</li>
+                </ul>
+
+                <h3>Data Destruction Method</h3>
+                <ul>
+                    <li><strong>Primary Method:</strong> Overwrites data with cryptographically random bytes (CryptAcquireContextW)</li>
+                    <li><strong>Fallback Method:</strong> Zero-byte overwriting if random generation fails</li>
+                    <li><strong>Targets:</strong>
+                        <ul>
+                            <li>Master Boot Record (MBR) and partition tables</li>
+                            <li>System directories (Windows, Program Files, boot, System Volume Information)</li>
+                            <li>User data folders (AppData, Documents and Settings, Desktop, My Documents)</li>
+                            <li>Both fixed and removable media</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Anti-Forensic Techniques</h3>
+                <ul>
+                    <li><strong>Disables Volume Shadow Copy:</strong> Stops VSS service to prevent system restore</li>
+                    <li><strong>Disables Crash Reporting:</strong> Sets CrashControl\CrashDumpEnabled to 0</li>
+                    <li><strong>Hides File Explorer Indicators:</strong> Disables ShowCompColor and ShowInfoTip registry values</li>
+                    <li><strong>Self-Deletion:</strong> Removes deployed driver files and registry entries after execution</li>
+                    <li><strong>Domain Controller Avoidance:</strong> Checks for SYSVOL directory and terminates if present</li>
                 </ul>
             </section>
 
             <!-- Mitigation / Detection -->
             <section id="mitigation">
                 <h2>Mitigation & Detection</h2>
+
+                <h3>Behavioural Indicators</h3>
                 <ul>
-                    <li>Block listed domains/IPs at firewall and proxy levels.</li>
-                    <li>Monitor registry keys for unauthorized Run entries.</li>
-                    <li>Deploy the following YARA rule for detection:</li>
+                    <li><strong>Monitor for EPMNTDRV driver deployment:</strong> Alert on .sys files created in %SystemRoot%\Drivers\ with random two-letter names</li>
+                    <li><strong>Service creation monitoring:</strong> Detect new service creation with suspicious driver names</li>
+                    <li><strong>Volume Shadow Copy modifications:</strong> Alert when VSS service is stopped or disabled</li>
+                    <li><strong>Mass file access patterns:</strong> Monitor for processes accessing large numbers of files across multiple directories</li>
+                    <li><strong>Registry modifications:</strong> Watch for changes to CrashControl\CrashDumpEnabled, ShowCompColor, ShowInfoTip</li>
+                    <li><strong>Privilege escalation attempts:</strong> Monitor AdjustTokenPrivileges calls for SeLoadDriverPrivilege</li>
                 </ul>
-                <pre><code>rule ExampleMalware_Detect
+
+                <h3>File-Based Detection</h3>
+                <ul>
+                    <li><strong>SHA256 Hash:</strong> 1bc44eef75779e3ca1eefb8ff5a64807dbc942b1e4a2672d77b9f6928d292591</li>
+                    <li><strong>Detect legitimate driver abuse:</strong> Monitor for processes accessing large numbers of files across multiple directories</li>
+                </ul>
+
+                <h3>YARA Rule</h3>
+                <p><em>Note: The following YARA rule is based on observed static characteristics from analysis. Consider this a starting point for detection engineering.</em></p>
+                <pre><code>rule HermeticWiper_Characteristics
 {
     meta:
-    author = "Analyst Name"
-    description = "Detects ExampleFamily malware variants"
-  strings:
-    $a = "example.c2" ascii nocase
-    $b = "UpdaterSvc" wide
-  condition:
-    any of them
-}</code></pre>
-            </section>
+        author = "Kye"
+        description = "Detects HermeticWiper based on static analysis findings"
+        reference = "Academic analysis project"
 
-            <!-- Lessons Learned-->
-            <section id="lessons-learned">
-                <h2>Lessons Learned</h2>
+    strings:
+        // Driver reference patterns
+        $driver1 = "EPMNTDRV" ascii wide
+        $driver2 = "\\\\PhysicalDrive%u" ascii wide
+
+        // Target directories
+        $path1 = "C:\\Windows\\SYSVOL" ascii wide
+        $path2 = "System Volume Information" ascii wide
+
+        // Registry Keys
+        $reg1 = "CrashControl" ascii wide
+        $reg2 = "ShowCompColor" ascii wide
+        $reg3 = "ShowInfoTip" ascii wide
+
+        // API patterns (could use imports instead)
+        $api1 = "AdjustTokenPrivileges" ascii
+        $api2 = "CryptAcquireContextW" ascii
+        $api3 = "DeviceIOControl" ascii
+
+    condition:
+        uint16(0) = 0x5a4d and // PE file
+        (
+            ($driver1 and $driver2) or
+            (2 of ($path*)) or
+            (2 of ($reg*)) or
+            (all of ($api*))
+        )
+}</code></pre>
+
+                <h3>Prevention Considerations</h3>
                 <ul>
-                    <li>Importance of isolating samples in sandboxed environments.</li>
-                     <li>Automating triage processes can accelerate IOC extraction.</li>
-                     <li>Consistent documentation ensures reproducibility and credibility.</li>
+                    <li><strong>Application Whitelisting:</strong> Restrict unauthorised driver installations</li>
+                    <li><strong>Least Privilege:</strong> Limit accounts with SeLoadDriverPrivilege</li>
+                    <li><strong>Driver Signature Enforcement:</strong> Enable Windows Driver Signature Enforcement where possible</li>
+                    <li><strong>Backup Strategy:</strong> Maintain offline/air-gapped backups that can't be accessed by compromised systems</li>
+                    <li><strong>Network Segmentation:</strong> Limit lateral movement capabilities to contain wiper deployment</li>
                 </ul>
             </section>
 

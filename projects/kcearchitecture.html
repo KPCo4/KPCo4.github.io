@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="eng">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Risk Assessment of KCE's Security Posture</title>
+        <link rel="stylesheet" href="../styles.css">
+        <script defer src="../script.js"></script>
+        <link rel="stylesheet" href="projects.css">
+    </head>
+
+    <body>
+        <main>
+            <!-- Project Header -->
+            <section id="project-header">
+            <h1>KCE OT & IT Security Scenario</h1>
+            <p>This project analyses a hypothetical scenario, evaluating security risks in KCE's Operational Technology (OT) and IT networks</p>
+            <div class="stat-box">
+                <p><strong>Date:</strong> 2025-11-24</p>
+                <p><strong>Contributors:</strong> Kye P.C.</p>
+                <p><strong>Platform:</strong> KCE Corporate IT & OT Networks (hypothetical)</p>
+            </div>
+            </section>
+
+            <!-- Executive Summary -->
+            <section id="executive-summary">
+            <h2>Executive Summary</h2>
+            <p>
+                Kelvin Control Enhancements (KCE) provides Operational Technology (OT) services to a local nuclear power station, 
+                alongside corporate IT, SCADA remote operations, and a wellbeing platform (MindfulCheck).
+                A combination of weak governance, poor segmentation, inadequate logging, and unmanaged third-party access
+                has contributed to data leaks, operational risk, and potential exposure of critical infrastructure.
+            </p>
+            <ul>
+                <li>OT firmware updates are downloaded directly from the Internet without verification.</li>
+                <li>Temporary staff, subcontractors, and external suppliers retain privileged access.</li>
+                <li>OT and IT network boundaries are weak, with a flat core IT network.</li>
+                <li>No formal security governance or oversight exists at a leadership level.</li>
+            </ul>
+            </section>
+
+            <!-- Key Problem Overview -->
+            <section id="quick-overview">
+                <h2>Key Risk Areas (KP1–KP5)</h2>
+                <div class="stat-box">
+                    <p><strong>KP1:</strong> External / Temporary Personnel Access</p>
+                    <p><strong>KP2:</strong> Insufficient Logging & Monitoring</p>
+                    <p><strong>KP3:</strong> OT Network Architecture</p>
+                    <p><strong>KP4:</strong> IT Network Segmentation</p>
+                    <p><strong>KP5:</strong> Security Governance, Policy & Culture</p>
+                </div>
+            </section>
+
+            <!-- Analysis Process -->
+            <section id="analysis-process">
+                <h2>Detailed Analysis</h2>
+
+                <div class="card-issue">External / Temporary Personnel Access</div>
+
+                <table class="card-table">
+                    <thead>
+                        <tr>
+                            <th>Factors</th>
+                            <th>Associated Risks</th>
+                            <th>Mitigations</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li><strong>Field engineers:</strong> may be contractors, have unmonitored and complete access to OT network and ICS.</li>
+                                    <li><strong>Temporary admin staff:</strong> have access to the management network (diagram 1).</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Risk of inadequate training of transitory workforce leading to errors</li>
+                                    <li class="card-bullet">Risk of vetting of training of transitory workforce leading to malicious actors gaining access</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Limit temporary/external staff usage</li>
+                                    <li class="card-bullet">Use principles of zero-trust and least privilege access to limit potential damage temporary staff can cause</li>
+                                    <li class="card-bullet">Periodic access reviews and automatic expiry for temporary access</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>External supplier (MindfulCheck):</strong> retaining network access and Powershell privileges post-implementation
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">External suppliers may not be subject to the same vetting or vetting standards as KCE staff</li>
+                                    <li class="card-bullet">External suppliers are not controlled by KCE and may not be completely aligned with its interests</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Updates could be delivered and vetted internally instead by KCE staff before installation</li>
+                                    <li class="card-bullet">The same mitigations used for temporary staff would also help</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <div class="card-issue">Insufficient Logging/Monitoring</div>
+
+                <table class="card-table">
+                    <thead>
+                        <tr>
+                            <th>Factors</th>
+                            <th>Associated Risks</th>
+                            <th>Mitigations</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>Inadequate logging:</strong> firewall logs only capture information about allowed/denied traffic at network boundaries but doesn't capture a myriad of other important data
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">The current system wouldn't capture misuse of authorised access</li>
+                                    <li class="card-bullet">Even activity with non-malicious intent a lack of logs removes accountability for mistakes</li>
+                                    <li class="card-bullet">A lack of logs also means that the root causes of errors and bugs in software may be harder to track down and identify affecting operations</li>
+                                </ul>
+                            </td>
+                            <td>
+                                Implementing the following logs for the core IT and OT networks should help mitigate the risks:
+                                <ul>
+                                    <li class="card-bullet"><strong>Authentication logs:</strong> Who has logged in, when they logged in, and from where</li>
+                                    <li class="card-bullet"><strong>Admin activity logs:</strong> What actions were taken on servers, config changes</li>
+                                    <li class="card-bullet"><strong>Application logs:</strong> logs activity and errors within software used within the business</li>
+                                    <li class="card-bullet"><strong>Anomaly/behaviour:</strong> Detect suspicious patterns from authorised users </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="card-issue">OT Network Architecture</div>
+
+                <table class="card-table">
+                    <thead>
+                        <tr>
+                            <th>Factors</th>
+                            <th>Associated Risks</th>
+                            <th>Mitigations</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li><strong>Direct unprotected access:</strong> from internet connected laptops to the OT network</li>
+                                    <li><strong>Unvetted firmware updates:</strong> downloaded directly from the internet and uploaded to critical ICS systems</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">There is a direct route from malware to field engineer laptops and finally the OT network (diagram 1)</li>
+                                    <li class="card-bullet">Access is only protected by a password which is weak for a system of such importance</li>
+                                    <li class="card-bullet">The remote access to the OT network from the core IT system, via SCADA, massively increases the attack surface</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Reworking the security architecture of power stations to better protect the OT network (see diagram 2 with explanation)</li>
+                                    <li class="card-bullet">Consider removing the remote SCADA access if not critical to business operations</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Modbus protocol:</strong> usage for connecting to the ICS systems
+                            </td>
+                            <td>
+                                Classic Modbus has no built-in security features:
+                                <ul>
+                                    <li class="card-bullet"><strong>No authentication:</strong> any device that can speak to the modbus network can issue commands</li>
+                                    <li class="card-bullet"><strong>No encryption:</strong> all data, including control commands, is sent in cleartext so anyone on the network can read or modify traffic</li>
+                                    <li class="card-bullet"><strong>No integrity protection:</strong> meaning packet tampering cannot be detected</li>
+                                    <li class="card-bullet"><strong>Potential for broadcast-like behaviour:</strong> which is in some architectures meaning compromised devices can impact multiple controllers</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Implementing Modbus Secure/TCP would address these risks but may be infeasible in dated power stations and at scale</li>
+                                    <li class="card-bullet">Securing network entry points</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>         
+
+                <div class="card-issue">IT Network Architecture</div>
+
+                <table class="card-table">
+                    <thead>
+                        <tr>
+                            <th>Factors</th>
+                            <th>Associated Risks</th>
+                            <th>Mitigations</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>Flat IT network:</strong> with no segmentation for services
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">The lack of segmentation exposes the network to risks of lateral movement.</li>
+                                    <li class="card-bullet">The domain controller just sits on the network where it controls authentication for the entire domain making the network at risk of credential attacks</li>
+                                    <li class="card-bullet">One weak point exposes all systems</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Setting up a managed switch to logically segment the network through VLANs with appropriate firewalls and access control restrictions setup between them (diagram 3)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>No apparent email gateway:</strong> meaning no visible scanning of incoming mail is being done
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">An attacker which compromises a Mail Server via phishing may pivot to the SCADA system on the same network</li>
+                                    <li class="card-bullet">There's no apparent filtering of malicious content before it reaches the mail server which has the same access as all other servers</li>
+                                    <li class="card-bullet">It's a weak point exposes all systems</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Implement a mail gateway to filter out phishing or malicious mail attempts</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>       
+                
+                <div class="card-issue">Security Governance, Policy, & Culture</div>
+
+                <table class="card-table">
+                    <thead>
+                        <tr>
+                            <th>Factors</th>
+                            <th>Associated Risks</th>
+                            <th>Mitigations</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>No formal security policy:</strong> with decisions largely driven by budget and a general lack of board oversight
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">The lack of policy denotes the likelihood of systemic poor security practices among employees opening up a range of vulnerabilities for the organisation</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Create an information Security policy setting out key security objectives, scope, and responsibility</li>
+                                    <li class="card-bullet">Support this policy with training and the creation of standards and procedures to be followed</li>
+                                    <li class="card-bullet">An existing policy framework can be built upon to aid this implementation</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li><strong>Security deprioritised:</strong> against financial, operational, and contractual obligations</li>
+                                    <li><strong>Lack of visibility into IT operations:</strong> especially at the board level</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">The lack of awareness or consideration of security concerns from the top down during key decision making is how KCE got themselves into situations where they have to sacrifice security for contractual obligations</li>
+                                    <li class="card-bullet">For a business managing critical infrastructure they have a very laissez faire attitude towards security with resistance to even basic controls</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Create board-level accountability by assigning a ownership role over security that makes it an agenda item</li>
+                                    <li class="card-bullet">Ensure regular security reporting keeping it at the forefront of the business</li>
+                                    <li class="card-bullet">Treating security as a business risk emphasising the cost of operational disruptions, fines, and reputational damage</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Employees lack of security awareness:</strong> with their actions and the very public disclosure of the work they conduct at KCE
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Field engineers publicly talking about their work in CVs leave them highly exposed as targets of social engineering attacks especially due to the contact information contained within</li>
+                                    <li class="card-bullet">Poor security practices in their choice of security credentials, use of KCE systems, and way of accessing them</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li class="card-bullet">Role specific security training and intermittent simulations to test efficacy</li>
+                                    <li class="card-bullet">Track metrics such as completion rates to measure cultural change</li>
+                                    <li class="card-bullet">Incentivise active reporting of issues</li>
+                                </ul>
+                            </td>                            
+                        </tr>
+                    </tbody>
+                </table>       
+            </section>
+
+            <!-- Key Findings -->
+            <section id="key-findings">
+                <h2>Key Findings</h2>
+                <p>The risk assessment of KCE's OT and IT networks revealed several critical observations that have implications for operational security, governance, and resilience:</p>
+                <ul>
+                    <li><strong>Uncontrolled access:</strong> Field engineers, temporary staff, and external suppliers retain high levels of access to both OT and IT networks, increasing the risk of accidental or malicious activity.</li>
+                    <li><strong>Inadequate logging and monitoring:</strong> The current systems fail to capture detailed logs of user activity or anomalies, reducing the ability to detect, investigate, and respond to incidents.</li>
+                    <li><strong>OT network vulnerabilities:</strong> Direct internet access and unverified firmware updates pose a significant risk to critical ICS systems, creating potential pathways for compromise.</li>
+                    <li><strong>Flat IT network architecture:</strong> Lack of segmentation allows lateral movement across services and increases exposure of high-value systems such as domain controllers.</li>
+                    <li><strong>Weak governance and Culture:</strong> Security policies are underdeveloped, board-level oversight is limited, and staff awareness of security risks is inconsistent, making enforcement and accountability difficult.</li>
+                    <li><strong>Critical mitigation opportunities:</strong> Implementing access controls, zero-trust principles, verified firmware workflows, segmentation, logging, and importantly good policy would address many of the identified risks.</li>
+                </ul>
+            </section>
+
+            <!-- Resource Section -->
+            <section id="resource-section">
+                <h2>Resources</h2>
+                <p>The following resources support the analysis conducted in this project and provide architectural, operational, and contextual information referenced throughout the report.</p>
+
+                <!-- Background Scenario -->
+                 <div class="resource-card">
+                    <h3>Background Scenario</h3>
+                    <p>
+                        The full KCE scenario used as the foundation of this risk assessment can be downloaded below.
+                        It contains some organisational context, OT/IT environment descriptions, and operational challenges referenced throughout this report.
+                    </p>
+                    <a class="download-btn" href="files/kce-scenario.pdf">⬇️ Download Full Scenario</a>
+                 </div>
+
+                 <!-- Diagrams & Architecture -->
+                  <div class="resource-card">
+                    <h3>Architecture Diagrams</h3>
+                    <p>
+                        The following diagrams were referenced in the risk assessment to illustrate both the current shortcomings in network design and the proposed solutions.
+                    </p>
+
+                    <div class="resource-image">
+                        <img src="images/kce-network.jpg" alt="Current KCE Network Diagram">
+                        <p class="image-caption"><i>Diagram 1: Above is a diagram of the KCE systems hastily drawn up by the IT Manager. It is therefore far from comprehensive and designed to give only a
+brief introduction.</i></p>
+                    </div>
+
+                    <div class="resource-image">
+                        <img src="images/proposed-ot.png" alt="Proposed OT architecture Rework">
+                        <p class="image-caption"><i>Diagram 2: Proposed OT Network Architecture with greatly enhanced access control and improved verification for firmware deployment.</i></p>
+                    </div>
+
+                    <div class="resource-image">
+                        <img src="images/it-network-segmentation.png" alt="Network diagram showing how flat architecture can be segmented using VLANs">
+                        <p class="image-caption"><i>Diagram 3: Proposed IT Network Segmentation to reduce lateral movement.</i></p>
+                    </div>
+                  </div>
+            </section>
+
+            <!-- Lessons Learned-->
+            <section id="lessons-learned">
+                <h2>Lessons Learned</h2>
+                <ul>
+                    <li><strong>Access must be intentionally designed, not inherited:</strong> Long-standing "default trust" in both IT and OT environments has introduced unnecessary exposure. Access control models must be actively maintained, reviewed, and justified.</li>
+                    <li><strong>Visibility is essential for resilience:</strong> Without comprehensive logging, monitoring, and alerting, even well-designed controls cannot prevent or contain threats effectively. Detection capabilities must evolve alongside prevention measures.</li>
+                    <li><strong>Security relies on validated sources:</strong> The lack of implementation for trusted firmware update pathways demonstrates how easily supply-chain weaknesses can undermine system security.</li>
+                    <li><strong>Segmentation is fundamental, not optional:</strong> Flat networks-especially in critical environments enable rapid lateral movement and undermine containment strategies. Segmentation should be treated as a baseline requirement.</li>
+                    <li><strong>Governance shapes technical outcomes:</strong> Cultural and procedural gaps (e.g. unclear rules, inconsistent enforcement, limited board oversight) significantly influence the organisation's risk posture. Technical fixes alone cannot compensate for weak governance.</li>
+                    <li><strong>Proper security requires understanding business objectives:</strong> The incomplete information in the scenario highlighted the importance of grounding security decisions in the organisation's business plan ensuring that controls support, rather than obstruct, operational needs.</li>
+                </ul>
+            </section>
+
+            <!-- Back To Portfolio-->
+            <div id="back" style="text-align:center; margin-top:1rem; margin-bottom:3rem;">
+                <a href="../index.html#projects" class="back-btn" style="padding:0.6rem 1.2rem; font-size:0.95rem;">
+                        ← Back to Portfolio
+                </a>
+            </div>
+        </main>
+    </body>
+</html>

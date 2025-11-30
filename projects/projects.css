@@ -206,6 +206,22 @@ body.dark-mode .card-section p {
     color: #dcdcdc;
 }
 
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+    margin: 1rem 0;
+}
+
+.table-wrapper {
+    box-shadow: inset -10px 0 8px -8px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 768px) {
+    .card-table {
+        min-width: 600px; /* prevents table from getting too compressed */
+    }
+}
+
 @media (max-width: 420px) {
     .long-paragraph-list > li { margin-bottom: 0.8rem; line-height: 1.55; }
 }

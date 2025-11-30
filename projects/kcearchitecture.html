@@ -180,7 +180,14 @@
                                 </td>
                                 <td>
                                     <ul>
-                                        <li class="card-bullet">Reworking the security architecture of power stations to better protect the OT network (see diagram 2 with explanation)</li>
+                                        <li class="card-bullet">Reworking the security architecture of power stations to better protect the OT network:</li>
+                                        <ul>
+                                            <li>Implement a DMZ for firmware verification before deployment</li>
+                                            <li>Utilise bastion hosts for remote and controlled access</li>
+                                            <li>Multiple bastion hosts are used to avoid a single point of failure and maintain constant uptime</li>
+                                            <li>Multi-factor authentication should be used for bastion host access</li>
+                                            <li>(See Diagram 2 for proposed architecture)</li>
+                                        </ul>
                                         <li class="card-bullet">Consider removing the remote SCADA access if not critical to business operations</li>
                                     </ul>
                                 </td>
